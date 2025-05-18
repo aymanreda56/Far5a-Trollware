@@ -51,6 +51,7 @@ int create_LOC_MACHINE_Key(LPCWSTR subkey_path, LPCWSTR value_name, LPCWSTR data
     RegCloseKey(hKey);
 
     std::cout << "Registry key and values created successfully." << std::endl;
+    return 1;
 }
 
 
@@ -104,7 +105,7 @@ int findMyProc(const char *procname) {
 
 int main() {
     
-    LPCWSTR subkey_path = L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Icons";
+    LPCWSTR subkey_path = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Icons";
 
     // Set two expandable string values
     LPCWSTR valueName1 = L"3";

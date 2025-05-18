@@ -1,7 +1,9 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <shlobj.h>
+#include <tlhelp32.h>
 
 bool SetFileExtensionIcon(const std::wstring& extension, const std::wstring& iconPath, bool revert = false) {
     HKEY hExtKey = nullptr;
@@ -86,22 +88,232 @@ bool SetFileExtensionIcon(const std::wstring& extension, const std::wstring& ico
     return true;
 }
 
-int main() {
-    
 
-    std::wstring extension = L".txt";
-    std::wstring path_to_ico =  L"revert";//L"D:\\CLASSSWORKKK\\far5a\\roast.ico";//
-    if (extension[0] != L'.') {
-        std::wcerr << L"Extension must start with '.'" << std::endl;
+
+
+
+
+
+
+
+void FuckUpIcons(const std::wstring & path_to_ico, std::vector<std::wstring> & extensions, bool unfuck)
+{
+    for (auto& extension : extensions)
+    {
+        std::cout<<"Changing icons for extension: " << std::string(extension.begin(), extension.end()) << std::endl << std::endl;
+
+        if (extension[0] != L'.') {
+                std::wcerr << L"Extension must start with '.'" << std::endl;
+                return;
+            }
+
+        if (unfuck) {
+            SetFileExtensionIcon(extension, L"", true);
+        } else {
+            std::wstring iconPath = path_to_ico;
+            SetFileExtensionIcon(extension, iconPath, false);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int create_LOC_MACHINE_Key(LPCWSTR subkey_path, LPCWSTR value_name, LPCWSTR data)
+{
+    HKEY hKey;
+
+    // Create or open the key
+    LONG result = RegCreateKeyExW(
+        HKEY_LOCAL_MACHINE,   // Root key
+        subkey_path,               // Subkey path
+        0,                    // Reserved
+        NULL,                 // Class
+        REG_OPTION_NON_VOLATILE, // Options
+        KEY_WRITE | KEY_WOW64_64KEY , // Access rights
+        NULL,                 // Security attributes
+        &hKey,                // Handle to opened key
+        NULL                  // Disposition (created or opened)
+    );
+
+    if (result != ERROR_SUCCESS) {
+        std::wcerr << L"Failed to create or open the key. Error code: " << result << std::endl;
         return 1;
     }
 
-    if (std::wstring(path_to_ico) == L"revert") {
-        SetFileExtensionIcon(extension, L"", true);
-    } else {
-        std::wstring iconPath = path_to_ico;
-        SetFileExtensionIcon(extension, iconPath, false);
+
+
+    result = RegSetValueExW(
+        hKey,
+        value_name,
+        0,
+        REG_EXPAND_SZ,
+        reinterpret_cast<const BYTE*>(data),
+        (DWORD)((wcslen(data) + 1) * sizeof(wchar_t))
+    );
+
+    if (result != ERROR_SUCCESS) {
+        std::wcerr << L"Failed to set value 1. Error code: " << result << std::endl;
+        RegCloseKey(hKey);
+        return 1;
     }
+
+
+    RegCloseKey(hKey);
+
+    std::cout << "Registry key and values created successfully." << std::endl;
+    return 1;
+}
+
+
+// find process ID by process name
+int findMyProc(const char *procname) {
+
+  HANDLE hSnapshot;
+  PROCESSENTRY32 pe;
+  int pid = 0;
+  BOOL hResult;
+
+  // snapshot of all processes in the system
+  hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  if (INVALID_HANDLE_VALUE == hSnapshot) return 0;
+
+  // initializing size: needed for using Process32First
+  pe.dwSize = sizeof(PROCESSENTRY32);
+
+  // info about first process encountered in a system snapshot
+  hResult = Process32First(hSnapshot, &pe);
+
+  // retrieve information about the processes
+  // and exit if unsuccessful
+  while (hResult) {
+    // if we find the process: return process ID
+    if (strcmp(procname, pe.szExeFile) == 0) {
+      pid = pe.th32ProcessID;
+      break;
+    }
+    hResult = Process32Next(hSnapshot, &pe);
+  }
+
+  // closes an open handle (CreateToolhelp32Snapshot)
+  CloseHandle(hSnapshot);
+  return pid;
+}
+
+
+
+
+
+
+
+void FuckUpFolders(const std::wstring path_to_ico, const bool unfuck)
+{
+
+    if(unfuck)
+    {
+        HKEY hkey = nullptr;
+
+
+        if(RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", 0, KEY_ALL_ACCESS, &hkey) != ERROR_SUCCESS)
+        {
+            std::cout<<"Failed to open the key to unfuck up the folder... reverting everything back"<<std::endl;
+            return;
+        }
+
+        if(RegDeleteTreeW(hkey, L"Shell Icons") != ERROR_SUCCESS){
+            std::cout<<"error when unfucking the folder icons, to restore it manually, jump to the registry 'Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons' and just delete the key 'Shell Icons' then restart the windows explorer "<<std::endl;
+            return;
+        }
+    }
+
+
+    else
+    {
+        LPCWSTR subkey_path = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons";
+
+        // Set two expandable string values
+        LPCWSTR valueName1 = L"3";
+
+        create_LOC_MACHINE_Key(subkey_path, valueName1, path_to_ico.c_str());
+
+        LPCWSTR valueName2 = L"4";
+
+        create_LOC_MACHINE_Key(subkey_path, valueName2, path_to_ico.c_str());
+    }
+
+
+
+    //Restarting (basically only killing) Windows File Explorer
+    int pid = 0; // process ID
+
+    pid = findMyProc("explorer.exe");
+    if (pid) {
+        printf("\n\nPID of windows file explorer = %d\n\n\n", pid);
+
+
+        //finally killing the process
+        HANDLE handle = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+        if (NULL != handle) {   
+            TerminateProcess(handle, 0);
+            CloseHandle(handle);
+        }
+    }
+    
+}
+
+
+
+
+
+int main() {
+    
+
+    std::vector<std::wstring> extensions = {L".txt", L".exe",  L".dll", L".doc", L".docx",
+                                    L".docm", L".pdf", L".psd", L".png", L".jpg", L".7z", L".rar", L".zip", L".html"
+                                    , L".xlsm", L".xlsx", L".xls", L".cur"};
+
+
+    const std::wstring path_to_ico =  L"D:\\CLASSSWORKKK\\far5a\\roast.ico";//L"revert";//
+
+
+    FuckUpFolders(path_to_ico, false);
+    FuckUpIcons(path_to_ico, extensions, false);
+    
+
+
+    while(true)
+    {
+        if(GetAsyncKeyState(VK_F10)) //scanning for f10 press
+        {
+            break;
+        }
+    }
+
+    
+    FuckUpIcons(path_to_ico, extensions, true);
+    FuckUpFolders(path_to_ico, true);
+
+    
+    
 
     return 0;
 }
