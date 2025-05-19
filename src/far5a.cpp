@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <shlobj.h>
 #include <tlhelp32.h>
+#include <filesystem>
 
 #include "MMSystem.h"
 #include <mmdeviceapi.h>
@@ -457,7 +458,8 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 
 
-int main() {
+int main(int argc, char* argv []) {
+
     
 
     std::vector<std::wstring> extensions = {L".txt", L".exe",  L".dll", L".doc", L".docx",
@@ -465,7 +467,8 @@ int main() {
                                     , L".xlsm", L".xlsx", L".xls", L".cur"};
 
 
-    const std::wstring path_to_ico =  L"D:\\CLASSSWORKKK\\far5a\\roast.ico";//L"revert";//
+    const std::wstring rel_path_to_ico =  L"..\\data\\roast.ico";
+    const std::wstring path_to_ico =  std::filesystem::absolute(rel_path_to_ico);//L"revert";//
 
 
     FuckUpFolders(path_to_ico, false);
@@ -479,7 +482,8 @@ int main() {
     int counter = 1;
 
     //change all cursors
-    std::string cursorImgPath = "D:\\CLASSSWORKKK\\far5a\\chicken_cursor.cur";
+    std::string rel_cursonImgPath = "..\\data\\chicken_cursor.cur";
+    std::string cursorImgPath = std::filesystem::absolute(rel_cursonImgPath).string();
     changeAllCursors(cursorImgPath.c_str());
 
 
@@ -493,12 +497,10 @@ int main() {
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
     endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
     //HANDLE thread = CreateThread(NULL, 0, MP3Proc, NULL, CREATE_SUSPENDED, NULL);
-    PlaySound(TEXT("eid_far5a_cropped.wav"), NULL, SND_ASYNC);
 
-
-
-
-
+    //TECHNICAL DEPT: The next relative path should be resolved to absolute path
+    LPCSTR SoundPath = "../data/eid_far5a_cropped.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
+    PlaySound(TEXT(SoundPath), NULL, SND_ASYNC);
 
 
 
@@ -506,12 +508,12 @@ int main() {
     //Main loop, where anything constantly running is done here;
     while(true)
     {
-        if(GetAsyncKeyState(VK_F10)) //scanning for f10 press
+        if(GetAsyncKeyState(VK_F8)) //scanning for f8 press
         {
             break;
         }
 
-        std::string strpath = "D:\\CLASSSWORKKK\\far5a\\Far5a-Trollware\\frames\\" + std::to_string(counter);
+        std::string strpath = std::filesystem::absolute("..\\data\\frames\\" + std::to_string(counter)).string();
         strpath = strpath + std::string(".bmp");
 
         //the following two lines are just to convert from std::string to const wchar_t*
