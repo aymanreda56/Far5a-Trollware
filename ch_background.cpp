@@ -59,12 +59,41 @@ int changeCursortoDefault()
 }
 
 
+std::wstring GetCurrentBackground()
+{
+    HKEY hExtKey = nullptr;
+
+    // Open the extension key (e.g., .txt → txtfile)
+    std::wstring extKeyPath = L"Control Panel\\Desktop";
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, extKeyPath.c_str(), 0, KEY_READ | KEY_WRITE, &hExtKey) != ERROR_SUCCESS) {
+        std::wcerr << L"Failed to open extension key: " << extKeyPath << std::endl;
+        return L"Not Found";
+    }
+
+    wchar_t BackGroundPath[256];
+    DWORD bufferSize = sizeof(BackGroundPath);
+    DWORD type = 0;
+    if (RegQueryValueExW(hExtKey, L"WallPaper", NULL, &type, reinterpret_cast<LPBYTE>(BackGroundPath), &bufferSize) != ERROR_SUCCESS || type != REG_SZ) {
+        std::wcerr << L"Failed to read Background path"<< std::endl;
+        RegCloseKey(hExtKey);
+        return L"Not Found";
+    }
+
+    RegCloseKey(hExtKey);
+
+    return std::wstring(BackGroundPath);
+}
+
 
 
 
 
 
 int main() {
+
+
+    //Capture the current background path
+    std::wstring BGPath = GetCurrentBackground();
 
     int counter = 1;
 
@@ -107,11 +136,13 @@ int main() {
     changeCursortoDefault();
 
 
+    //revert background back
+    std::wstring BGPath_tmp = std::wstring(BGPath.begin(), BGPath.end());
+    const wchar_t* BGPath_wchar = BGPath_tmp.c_str();
+    int result;
+    result = SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (void *) BGPath_wchar, SPIF_UPDATEINIFILE);
+    std::cout << result;
 
-
-
-
-    
             
     return 0;
 }
