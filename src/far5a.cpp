@@ -460,6 +460,23 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 int main(int argc, char* argv []) {
 
+
+    // Play the sound
+    IMMDeviceEnumerator* deviceEnumerator = nullptr;
+    IMMDevice* defaultDevice = nullptr;
+    IAudioEndpointVolume* endpointVolume = nullptr;
+
+    //Increase the volume
+    AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
+    endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
+
+
+    LPCSTR LaughSoundPath = "../data/mus_f_newlaugh.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
+    PlaySound(TEXT(LaughSoundPath), NULL, SND_SYNC);
+
+
+
+    
     
 
     std::vector<std::wstring> extensions = {L".txt", L".exe",  L".dll", L".doc", L".docx",
@@ -488,15 +505,7 @@ int main(int argc, char* argv []) {
 
 
 
-    // Play the sound
-    IMMDeviceEnumerator* deviceEnumerator = nullptr;
-    IMMDevice* defaultDevice = nullptr;
-    IAudioEndpointVolume* endpointVolume = nullptr;
 
-    //Increase the volume
-    AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
-    endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
-    //HANDLE thread = CreateThread(NULL, 0, MP3Proc, NULL, CREATE_SUSPENDED, NULL);
 
     //TECHNICAL DEPT: The next relative path should be resolved to absolute path
     LPCSTR SoundPath = "../data/eid_far5a_cropped.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
