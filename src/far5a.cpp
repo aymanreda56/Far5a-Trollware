@@ -468,7 +468,7 @@ int main(int argc, char* argv []) {
 
     //Increase the volume
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
-    endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
+    endpointVolume->SetMasterVolumeLevelScalar(0.2, nullptr);
 
 
     LPCSTR LaughSoundPath = "../data/mus_f_newlaugh.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
@@ -536,7 +536,7 @@ int main(int argc, char* argv []) {
         counter = counter%47;
         if (counter == 0){counter++;}
 
-        usleep(100000); //busy waiting, decreasing this number makes the wallpaper change frames faster
+        usleep(10000); //busy waiting, decreasing this number makes the wallpaper change frames faster
     }
 
     // Turning off the music

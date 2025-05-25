@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include "MMSystem.h"
 #include <mmdeviceapi.h>
+#include <filesystem>
 
 #include <mciapi.h>
 #include <endpointvolume.h>
@@ -72,6 +73,17 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 
 
+std::string GetAbsExePath()
+{
+    char exepath [255];
+    DWORD result = GetModuleFileNameA(NULL, exepath, 255);
+    std::filesystem::path path(exepath);
+
+    return path.string();
+}
+
+
+
 int main()
 {
 
@@ -82,10 +94,22 @@ int main()
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
     endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
     //HANDLE thread = CreateThread(NULL, 0, MP3Proc, NULL, CREATE_SUSPENDED, NULL);
-    PlaySound(TEXT("eid_far5a.wav"), NULL, SND_SYNC);
 
 
-    system("pause");
+
+    //getting the path of the current executable
+    std::filesystem::path path(GetAbsExePath());
+    std::filesystem::path directory_path = path.parent_path();
+    std::cout<<directory_path.string()<<std::endl;
+
+    std::string sound_path = directory_path.string()+ std::string("\\") + std::string("..\\data\\mus_f_newlaugh.wav");
+    std::cout<<sound_path<<std::endl;
+
+
+    PlaySoundA(sound_path.c_str(), NULL, SND_ASYNC);
+
+    Sleep(7000);
+
     DetachFromMasterOutput(endpointVolume, defaultDevice, deviceEnumerator);
 
     return 0;
