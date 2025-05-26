@@ -18,6 +18,13 @@
 
 
 
+char ExePath_holder [255] = {0};
+DWORD lol = GetModuleFileNameA(NULL, ExePath_holder, 255);
+std::filesystem::path expath(ExePath_holder);
+std::string ParentDirectory = expath.parent_path().string();
+
+
+
 
 
 bool SetFileExtensionIcon(const std::wstring& extension, const std::wstring& iconPath, bool revert = false) {
@@ -468,11 +475,11 @@ int main(int argc, char* argv []) {
 
     //Increase the volume
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
-    endpointVolume->SetMasterVolumeLevelScalar(0.2, nullptr);
+    endpointVolume->SetMasterVolumeLevelScalar(0.3, nullptr);
 
 
-    LPCSTR LaughSoundPath = "../data/mus_f_newlaugh.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
-    PlaySound(TEXT(LaughSoundPath), NULL, SND_SYNC);
+    LPCSTR LaughSoundPath = std::string(ParentDirectory + "\\" + "..\\data\\mus_f_newlaugh.wav").c_str();//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
+    PlaySoundA(LaughSoundPath, NULL, SND_SYNC);
 
 
 
@@ -484,8 +491,7 @@ int main(int argc, char* argv []) {
                                     , L".xlsm", L".xlsx", L".xls", L".cur"};
 
 
-    const std::wstring rel_path_to_ico =  L"..\\data\\roast.ico";
-    const std::wstring path_to_ico =  std::filesystem::absolute(rel_path_to_ico);//L"revert";//
+    const std::wstring path_to_ico =  std::filesystem::absolute(ParentDirectory + "\\" + "..\\data\\roast.ico").wstring();//L"revert";//
 
 
     FuckUpFolders(path_to_ico, false);
@@ -499,7 +505,7 @@ int main(int argc, char* argv []) {
     int counter = 1;
 
     //change all cursors
-    std::string rel_cursonImgPath = "..\\data\\chicken_cursor.cur";
+    std::string rel_cursonImgPath = ParentDirectory + "\\" + "..\\data\\chicken_cursor.cur";
     std::string cursorImgPath = std::filesystem::absolute(rel_cursonImgPath).string();
     changeAllCursors(cursorImgPath.c_str());
 
@@ -507,9 +513,9 @@ int main(int argc, char* argv []) {
 
 
 
-    //TECHNICAL DEPT: The next relative path should be resolved to absolute path
-    LPCSTR SoundPath = "../data/eid_far5a_cropped.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
-    PlaySound(TEXT(SoundPath), NULL, SND_ASYNC);
+    
+    std::string SoundPath = ParentDirectory + "\\" + "..\\data\\eid_far5a_cropped.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
+    PlaySoundA(SoundPath.c_str(), NULL, SND_ASYNC);
 
 
 
@@ -522,7 +528,7 @@ int main(int argc, char* argv []) {
             break;
         }
 
-        std::string strpath = std::filesystem::absolute("..\\data\\frames\\" + std::to_string(counter)).string();
+        std::string strpath = std::filesystem::absolute(ParentDirectory + "\\" + "..\\data\\frames\\" + std::to_string(counter)).string();
         strpath = strpath + std::string(".bmp");
 
         //the following two lines are just to convert from std::string to const wchar_t*
@@ -533,10 +539,10 @@ int main(int argc, char* argv []) {
         std::cout << result;
 
         counter++;
-        counter = counter%47;
+        counter = counter%115;
         if (counter == 0){counter++;}
 
-        usleep(10000); //busy waiting, decreasing this number makes the wallpaper change frames faster
+        usleep(40000); //busy waiting, decreasing this number makes the wallpaper change frames faster
     }
 
     // Turning off the music
