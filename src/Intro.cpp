@@ -5,6 +5,10 @@
 #include <filesystem>
 #include <chrono>
 
+
+#include <future>
+#include <mutex>
+
 #include "MMSystem.h"
 #include <mmdeviceapi.h>
 
@@ -12,6 +16,13 @@
 #include <endpointvolume.h>
 //these two headers are already included in the <Windows.h> header
 #pragma comment(lib, "Winmm.lib")
+
+
+
+char patth [255] = {0};
+DWORD tmpglbvar = GetModuleFileNameA(NULL, patth, 255);
+std::filesystem::path exePath(patth);
+std::string DirectoryPath = exePath.parent_path().string();
 
 
 
@@ -62,6 +73,71 @@ int GetFilesCountInDirectory(std::string path){
 
 
 
+void ToggleDesktopIcons()
+{
+    // HWND hWnd = FindWindow("Progman", NULL);
+    // HWND hDesktopWnd = FindWindowEx(hWnd, 0, "SHELLDLL_DefView", NULL);
+
+    // if (!hDesktopWnd)
+    //     hDesktopWnd = FindWindowEx(0, 0, "SHELLDLL_DefView", NULL);
+
+    // SendMessage(hDesktopWnd, WM_COMMAND, 0x7402, 0); // 0x7402 toggles desktop icons
+
+    HWND hDesktopWnd = NULL;
+
+    // Try finding the SHELLDLL_DefView window directly under Progman
+    HWND hProgman = FindWindow("Progman", NULL);
+    hDesktopWnd = FindWindowEx(hProgman, NULL, "SHELLDLL_DefView", NULL);
+
+    // If not found, search through WorkerW windows
+    if (!hDesktopWnd)
+    {
+        HWND hWorkerW = NULL;
+        do {
+            hWorkerW = FindWindowEx(NULL, hWorkerW, "WorkerW", NULL);
+            hDesktopWnd = FindWindowEx(hWorkerW, NULL, "SHELLDLL_DefView", NULL);
+        } while (hWorkerW != NULL && hDesktopWnd == NULL);
+    }
+
+    if (hDesktopWnd)
+    {
+        SendMessage(hDesktopWnd, WM_COMMAND, 0x7402, 0); // Toggle icons
+    }
+}
+
+
+
+
+
+
+
+void AsyncWaitThenShowIconsForSomeTime()
+{
+    Sleep(31000);
+    //showing icons
+    ToggleDesktopIcons();
+    Sleep(4000);
+
+    //Hiding them again
+    ToggleDesktopIcons();
+}
+
+void AsyncWaitingThenContinuouslyTogglingIcons()
+{
+    Sleep(79000);
+    for (int i = 0; i < 30; i++)
+    {   // I split the toggling into showing and hiding with different sleeping periods, because the time it takes to hide icons is more than the time it takes to show them
+        //So i split the delays trying to balance the visibility of both effects the hiding and showing of icons.
+
+        //showing them
+        ToggleDesktopIcons();
+        Sleep(400);
+
+        //Hiding them
+        ToggleDesktopIcons();
+        Sleep(70);
+    }
+}
 
 
 
@@ -70,55 +146,36 @@ int GetFilesCountInDirectory(std::string path){
 
 int main()
 {
-
-    //OLD CODE
-    /*
-    std::cout<<"hello"<<std::endl;
-    SHELLSTATE ss = { 0 };
-    LPSHELLSTATEA pss = &ss;
-    std::cout<<"world"<<std::endl;
-    SHGetSetSettings(pss, SSF_HIDEICONS, false);
-
-    std::cout<<pss->fHideIcons<<std::endl;
-    std::cout<<"lol"<<std::endl;
-
-    pss->fHideIcons = TRUE;
-
-
-    SHGetSetSettings(pss, SSF_HIDEICONS, TRUE);
-    std::cout<<pss->fHideIcons<<std::endl;
-    std::cout<<"lmao"<<std::endl;
-    */
     
 
-
-    HWND hWnd = FindWindow("Progman", NULL);
-    HWND hDesktopWnd = FindWindowEx(hWnd, 0, "SHELLDLL_DefView", NULL);
-
-    if (!hDesktopWnd)
-        hDesktopWnd = FindWindowEx(0, 0, "SHELLDLL_DefView", NULL);
-
-    SendMessage(hDesktopWnd, WM_COMMAND, 0x7402, 0); // 0x7402 toggles desktop icons
+    ToggleDesktopIcons();
 
 
 
     std::wstring BGPath = GetCurrentBackground();
 
 
+
     int counter = 1;
-    int max_files = GetFilesCountInDirectory("D:\\CLASSSWORKKK\\far5a\\Introduction video\\intro_frames\\");
-    int sound_duration = 83000000;
-    int time_step_of_one_frame = sound_duration / max_files;
-    bool TimeBenchmark = true;
-    auto start = std::chrono::high_resolution_clock::now();
+    int max_files = GetFilesCountInDirectory(DirectoryPath + "\\" + "..\\data\\short_intro_frames");
+    int sound_duration = 83000000;          //This magic value is just the duration of the intro wav file, in microseconds.. we will use this value to compute the sleeping period
+    int time_step_of_one_frame = sound_duration / max_files;    //duration of the entire wav file / num_frames = duration of each single frame,,,, roughly
+    bool TimeBenchmark = true;  //useless? till now
+    auto start = std::chrono::high_resolution_clock::now(); // measuring how much it takes to execute the background change, for each frame.
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
 
 
 
 
-    LPCSTR LaughSoundPath = "D:\\CLASSSWORKKK\\far5a\\Introduction video\\Far5a_intro_short.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
-    PlaySound(TEXT(LaughSoundPath), NULL, SND_ASYNC);
+    std::string LaughSoundPath = DirectoryPath + "\\" + "..\\data\\short_intro_audio.wav";
+    PlaySoundA(LaughSoundPath.c_str(), NULL, SND_ASYNC);
+
+
+    
+    // Toggling icons asynchronously in fixed time stamps (see the implementation to see the timestamps)
+    auto s1 = std::async(std::launch::async, AsyncWaitThenShowIconsForSomeTime);
+    auto s2 = std::async(std::launch::async, AsyncWaitingThenContinuouslyTogglingIcons);
 
     while(counter < max_files)
     {
@@ -126,14 +183,15 @@ int main()
         
         if(TimeBenchmark){start = std::chrono::high_resolution_clock::now();}
 
-        if(GetAsyncKeyState(VK_F10)) //scanning for f10 press
+        if(GetAsyncKeyState(VK_F8)) //scanning for f8 press to break the cycle and revert everything back
         {
             break;
         }
 
         
-        std::string strpath = "D:\\CLASSSWORKKK\\far5a\\Introduction video\\intro_frames\\" + std::to_string(counter);
-        strpath = strpath + std::string(".bmp");
+
+        
+        std::string strpath = DirectoryPath + "\\" + "..\\data\\short_intro_frames\\" + std::to_string(counter) + ".bmp";
 
 
         //the following two lines are just to convert from std::string to const wchar_t*
@@ -141,27 +199,24 @@ int main()
         const wchar_t* path = intermediate_path.c_str();
 
 
-        int result;
-        result = SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (void *) path, SPIF_UPDATEINIFILE);
+        int result = SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (void *) path, SPIF_UPDATEINIFILE);
 
 
         counter++;
-        counter = counter%max_files;
-        if (counter == 0){counter++;}
-
 
         if(TimeBenchmark){
             stop = std::chrono::high_resolution_clock::now(); //TimeBenchmark = false;
             duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();}
 
-        usleep(time_step_of_one_frame - duration*5); //busy waiting, decreasing this number makes the wallpaper change frames faster
+        usleep(time_step_of_one_frame - duration*3); //busy waiting, dynamic to accomodate different execution speeds, bad way to do synchronization between sound and video frames
         //usleep(118830);
     }
 
 
 
 
-    //revert background back
+    //revert everything back
+    //reverting background
     std::wstring BGPath_tmp = std::wstring(BGPath.begin(), BGPath.end());
     const wchar_t* BGPath_wchar = BGPath_tmp.c_str();
     int result;
@@ -170,10 +225,7 @@ int main()
 
 
 
-    if (!hDesktopWnd)
-        hDesktopWnd = FindWindowEx(0, 0, "SHELLDLL_DefView", NULL);
-
-    SendMessage(hDesktopWnd, WM_COMMAND, 0x7402, 0); // 0x7402 toggles desktop icons
+    ToggleDesktopIcons();
 
 
 
