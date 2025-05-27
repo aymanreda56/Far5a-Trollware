@@ -115,6 +115,8 @@ void AsyncWaitThenShowIconsForSomeTime(bool isShortIntro=1)
     ToggleDesktopIcons();
 }
 
+
+
 void AsyncWaitingThenContinuouslyTogglingIcons(bool isShortIntro=1)
 {
 
@@ -187,7 +189,7 @@ void Intro(bool isShortIntro=1)
 
     
     // Toggling icons asynchronously in fixed time stamps (see the implementation to see the timestamps)
-    auto s1 = std::async(std::launch::async, AsyncWaitThenShowIconsForSomeTime, isShortIntro);
+    auto s1 = std::async(std::launch::async, &AsyncWaitThenShowIconsForSomeTime, isShortIntro);
     auto s2 = std::async(std::launch::async, AsyncWaitingThenContinuouslyTogglingIcons, isShortIntro);
 
     while(counter < max_files)
