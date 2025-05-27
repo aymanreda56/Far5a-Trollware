@@ -87,11 +87,15 @@ std::string GetAbsExePath()
 int main()
 {
 
+    float original_volume_level = 0;
+
     IMMDeviceEnumerator* deviceEnumerator = nullptr;
     IMMDevice* defaultDevice = nullptr;
     IAudioEndpointVolume* endpointVolume = nullptr;
 
+
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
+    endpointVolume->GetMasterVolumeLevelScalar(&original_volume_level);
     endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
     //HANDLE thread = CreateThread(NULL, 0, MP3Proc, NULL, CREATE_SUSPENDED, NULL);
 
@@ -106,10 +110,14 @@ int main()
     std::cout<<sound_path<<std::endl;
 
 
-    PlaySoundA(sound_path.c_str(), NULL, SND_ASYNC);
+    PlaySoundA(sound_path.c_str(), NULL, SND_SYNC);
 
+    
+
+
+    endpointVolume->SetMasterVolumeLevelScalar(original_volume_level, nullptr);
     Sleep(7000);
-
+    
     DetachFromMasterOutput(endpointVolume, defaultDevice, deviceEnumerator);
 
     return 0;

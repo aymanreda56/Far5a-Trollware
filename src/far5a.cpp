@@ -444,6 +444,8 @@ int main(int argc, char* argv []) {
 
     //Increase the volume
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
+    float original_volume = 0;
+    endpointVolume->GetMasterVolumeLevelScalar(&original_volume);
     endpointVolume->SetMasterVolumeLevelScalar(0.3, nullptr);
 
 
@@ -515,6 +517,7 @@ int main(int argc, char* argv []) {
     }
 
     // Turning off the music
+    endpointVolume->SetMasterVolumeLevelScalar(original_volume, nullptr);
     DetachFromMasterOutput(endpointVolume, defaultDevice, deviceEnumerator);
 
     //fixing back everything
