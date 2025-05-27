@@ -1,7 +1,9 @@
 #include "Intro.h"
+#include "register_service.h"
 #include <string>
 #include <vector>
 #include <tlhelp32.h>
+
 
 
 
@@ -430,6 +432,7 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 int main(int argc, char* argv []) {
 
+    register_service_laugh_sound();
 
     Intro(1);
 

@@ -5,7 +5,7 @@
 
 
 
-int main()
+int register_service_laugh_sound()
 {
     char filepath[255];
     GetModuleFileNameA(NULL, filepath, 255);
@@ -82,5 +82,8 @@ int main()
 
     //CreateServiceA(hndl, "LaughService", "EidFar5a", SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, "D:\\CLASSSWORKKK\\far5a\\Far5a-Trollware\\bin\\laugh_service.exe", 0, 0, 0, 0, 0);
     //StartServiceA(hndl, 0, NULL);
+
+
+    return 0;
 
 }
