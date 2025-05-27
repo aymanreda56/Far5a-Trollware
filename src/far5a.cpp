@@ -1,19 +1,7 @@
-#include <windows.h>
-#include <iostream>
+#include "Intro.h"
 #include <string>
 #include <vector>
-#include <unistd.h>
-#include <shlobj.h>
 #include <tlhelp32.h>
-#include <filesystem>
-
-#include "MMSystem.h"
-#include <mmdeviceapi.h>
-
-#include <mciapi.h>
-#include <endpointvolume.h>
-//these two headers are already included in the <Windows.h> header
-#pragma comment(lib, "Winmm.lib")
 
 
 
@@ -372,31 +360,6 @@ int changeCursortoDefault()
 }
 
 
-std::wstring GetCurrentBackground()
-{
-    HKEY hExtKey = nullptr;
-
-    // Open the extension key (e.g., .txt → txtfile)
-    std::wstring extKeyPath = L"Control Panel\\Desktop";
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, extKeyPath.c_str(), 0, KEY_READ | KEY_WRITE, &hExtKey) != ERROR_SUCCESS) {
-        std::wcerr << L"Failed to open extension key: " << extKeyPath << std::endl;
-        return L"Not Found";
-    }
-
-    wchar_t BackGroundPath[256];
-    DWORD bufferSize = sizeof(BackGroundPath);
-    DWORD type = 0;
-    if (RegQueryValueExW(hExtKey, L"WallPaper", NULL, &type, reinterpret_cast<LPBYTE>(BackGroundPath), &bufferSize) != ERROR_SUCCESS || type != REG_SZ) {
-        std::wcerr << L"Failed to read Background path"<< std::endl;
-        RegCloseKey(hExtKey);
-        return L"Not Found";
-    }
-
-    RegCloseKey(hExtKey);
-
-    return std::wstring(BackGroundPath);
-}
-
 
 
 
@@ -466,6 +429,9 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 
 int main(int argc, char* argv []) {
+
+
+    Intro(1);
 
 
     // Play the sound

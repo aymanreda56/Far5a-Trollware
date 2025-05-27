@@ -19,14 +19,6 @@
 
 
 
-char patth [255] = {0};
-DWORD tmpglbvar = GetModuleFileNameA(NULL, patth, 255);
-std::filesystem::path exePath(patth);
-std::string DirectoryPath = exePath.parent_path().string();
-
-
-
-
 
 std::wstring GetCurrentBackground()
 {
@@ -111,9 +103,10 @@ void ToggleDesktopIcons()
 
 
 
-void AsyncWaitThenShowIconsForSomeTime()
+void AsyncWaitThenShowIconsForSomeTime(bool isShortIntro=1)
 {
-    Sleep(31000);
+    if(isShortIntro){Sleep(31000);}
+    else {Sleep(170000);}
     //showing icons
     ToggleDesktopIcons();
     Sleep(4000);
@@ -122,10 +115,13 @@ void AsyncWaitThenShowIconsForSomeTime()
     ToggleDesktopIcons();
 }
 
-void AsyncWaitingThenContinuouslyTogglingIcons()
+void AsyncWaitingThenContinuouslyTogglingIcons(bool isShortIntro=1)
 {
-    Sleep(79000);
-    for (int i = 0; i < 30; i++)
+
+    if(isShortIntro){Sleep(79000);}
+    else {Sleep(215000);}
+    
+    for (int i = 0; i < 15; i++)
     {   // I split the toggling into showing and hiding with different sleeping periods, because the time it takes to hide icons is more than the time it takes to show them
         //So i split the delays trying to balance the visibility of both effects the hiding and showing of icons.
 
@@ -135,7 +131,7 @@ void AsyncWaitingThenContinuouslyTogglingIcons()
 
         //Hiding them
         ToggleDesktopIcons();
-        Sleep(70);
+        Sleep(200);
     }
 }
 
@@ -144,10 +140,24 @@ void AsyncWaitingThenContinuouslyTogglingIcons()
 
 
 
-int main()
+void Intro(bool isShortIntro=1)
 {
-    
 
+
+    
+    //Some path variables to free my head from the relative path issues
+    char patth [255] = {0};
+    DWORD tmpglbvar = GetModuleFileNameA(NULL, patth, 255);
+    std::filesystem::path exePath(patth);
+    std::string DirectoryPath = exePath.parent_path().string();
+
+
+
+
+    std::string shortIntro;
+    if(isShortIntro) {shortIntro = "short";}
+    else {shortIntro = "long";}
+    
     ToggleDesktopIcons();
 
 
@@ -157,8 +167,11 @@ int main()
 
 
     int counter = 1;
-    int max_files = GetFilesCountInDirectory(DirectoryPath + "\\" + "..\\data\\short_intro_frames");
-    int sound_duration = 83000000;          //This magic value is just the duration of the intro wav file, in microseconds.. we will use this value to compute the sleeping period
+    int max_files = GetFilesCountInDirectory(DirectoryPath + "\\" + "..\\data\\"+ shortIntro +"_intro_frames");
+    int sound_duration;
+    if(isShortIntro) {sound_duration = 83000000;}
+    else {sound_duration = 224000000;}          //This magic value is just the duration of the intro wav file, in microseconds.. we will use this value to compute the sleeping period
+    
     int time_step_of_one_frame = sound_duration / max_files;    //duration of the entire wav file / num_frames = duration of each single frame,,,, roughly
     bool TimeBenchmark = true;  //useless? till now
     auto start = std::chrono::high_resolution_clock::now(); // measuring how much it takes to execute the background change, for each frame.
@@ -168,14 +181,14 @@ int main()
 
 
 
-    std::string LaughSoundPath = DirectoryPath + "\\" + "..\\data\\short_intro_audio.wav";
+    std::string LaughSoundPath = DirectoryPath + "\\" + "..\\data\\"+ shortIntro +"_intro_audio.wav";
     PlaySoundA(LaughSoundPath.c_str(), NULL, SND_ASYNC);
 
 
     
     // Toggling icons asynchronously in fixed time stamps (see the implementation to see the timestamps)
-    auto s1 = std::async(std::launch::async, AsyncWaitThenShowIconsForSomeTime);
-    auto s2 = std::async(std::launch::async, AsyncWaitingThenContinuouslyTogglingIcons);
+    auto s1 = std::async(std::launch::async, AsyncWaitThenShowIconsForSomeTime, isShortIntro);
+    auto s2 = std::async(std::launch::async, AsyncWaitingThenContinuouslyTogglingIcons, isShortIntro);
 
     while(counter < max_files)
     {
@@ -191,7 +204,7 @@ int main()
         
 
         
-        std::string strpath = DirectoryPath + "\\" + "..\\data\\short_intro_frames\\" + std::to_string(counter) + ".bmp";
+        std::string strpath = DirectoryPath + "\\" + "..\\data\\"+ shortIntro +"_intro_frames\\" + std::to_string(counter) + ".bmp";
 
 
         //the following two lines are just to convert from std::string to const wchar_t*
@@ -208,7 +221,7 @@ int main()
             stop = std::chrono::high_resolution_clock::now(); //TimeBenchmark = false;
             duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();}
 
-        usleep(time_step_of_one_frame - duration*3); //busy waiting, dynamic to accomodate different execution speeds, bad way to do synchronization between sound and video frames
+        usleep(time_step_of_one_frame - duration*4); //busy waiting, dynamic to accomodate different execution speeds, bad way to do synchronization between sound and video frames
         //usleep(118830);
     }
 
@@ -227,8 +240,4 @@ int main()
 
     ToggleDesktopIcons();
 
-
-
-
-    return 0;
 }
