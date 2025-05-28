@@ -3,6 +3,8 @@
 #include "MMSystem.h"
 #include <mmdeviceapi.h>
 #include <filesystem>
+#include "mus_f_newlaugh.h"
+#include <fstream>
 
 #include <mciapi.h>
 #include <endpointvolume.h>
@@ -21,6 +23,39 @@ DWORD WINAPI MP3Proc(_In_ LPVOID lpParameter) //lpParameter can be a pointer to 
         SuspendThread(GetCurrentThread()); //or the handle of this thread that you keep in a static variable instead
     }
 }
+
+
+
+
+void DeleteSelf()
+{
+    char path[255];
+    GetModuleFileNameA(NULL, path, 255);
+
+    std::string delcmd = "del \"" + std::string(path) + "\"";
+
+    std::ofstream("deleteme.bat")<< "timeout /t 0.1 >nul\n"
+                                  << delcmd << "\n"
+                                  << "del \"%~f0\"\n"; // delete batch file itself
+
+    // Launch the batch file in background
+    system("start /min deleteme.bat");
+}
+
+
+
+
+
+void WriteFileFromBytes(std::string dstFilePath, const unsigned char bytes[], int size)
+{
+    std::ofstream file(dstFilePath, std::ios::binary);
+    file.write(reinterpret_cast<const char*>(bytes), size);
+}
+
+
+
+
+
 
 
 
@@ -87,6 +122,10 @@ std::string GetAbsExePath()
 int main()
 {
 
+
+    
+
+
     float original_volume_level = 0;
 
     IMMDeviceEnumerator* deviceEnumerator = nullptr;
@@ -104,10 +143,14 @@ int main()
     //getting the path of the current executable
     std::filesystem::path path(GetAbsExePath());
     std::filesystem::path directory_path = path.parent_path();
-    std::cout<<directory_path.string()<<std::endl;
 
-    std::string sound_path = directory_path.string()+ std::string("\\") + std::string("..\\data\\mus_f_newlaugh.wav");
-    std::cout<<sound_path<<std::endl;
+
+    //std::string sound_path = directory_path.string()+ std::string("\\") + std::string("..\\data\\mus_f_newlaugh.wav");
+    std::string sound_path = directory_path.string()+ std::string("\\") + std::string("mus_f_newlaugh.wav");
+
+
+    //grab the sound wav file from the binary array
+    WriteFileFromBytes(sound_path, __mus_f_newlaugh_txt, __mus_f_newlaugh_txt_len);
 
 
     PlaySoundA(sound_path.c_str(), NULL, SND_SYNC);
@@ -116,9 +159,19 @@ int main()
 
 
     endpointVolume->SetMasterVolumeLevelScalar(original_volume_level, nullptr);
+
+
+    //delete the wav file after finishing execution
+    std::remove(sound_path.c_str());
+
+
     Sleep(7000);
     
     DetachFromMasterOutput(endpointVolume, defaultDevice, deviceEnumerator);
+
+
+    //delete the executable
+    //DeleteSelf();
 
     return 0;
 }
