@@ -1,3 +1,4 @@
+#include "ChangeResolution.h"
 #include <shlObj.h>
 #include <windows.h>
 #include <iostream>
@@ -120,10 +121,10 @@ void AsyncWaitThenShowIconsForSomeTime(bool isShortIntro=1)
 void AsyncWaitingThenContinuouslyTogglingIcons(bool isShortIntro=1)
 {
 
-    if(isShortIntro){Sleep(79000);}
-    else {Sleep(215000);}
+    if(isShortIntro){Sleep(80000);}
+    else {Sleep(209000);}
     
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 7; i++)
     {   // I split the toggling into showing and hiding with different sleeping periods, because the time it takes to hide icons is more than the time it takes to show them
         //So i split the delays trying to balance the visibility of both effects the hiding and showing of icons.
 
@@ -135,6 +136,16 @@ void AsyncWaitingThenContinuouslyTogglingIcons(bool isShortIntro=1)
         ToggleDesktopIcons();
         Sleep(200);
     }
+}
+
+
+void DishWasher(bool isShortIntro=1)
+{
+
+    if(isShortIntro){Sleep(84000);}
+    else {Sleep(225000);}
+    
+    WashingMachineResolution();
 }
 
 
@@ -190,7 +201,8 @@ void Intro(bool isShortIntro=1)
     
     // Toggling icons asynchronously in fixed time stamps (see the implementation to see the timestamps)
     auto s1 = std::async(std::launch::async, &AsyncWaitThenShowIconsForSomeTime, isShortIntro);
-    auto s2 = std::async(std::launch::async, AsyncWaitingThenContinuouslyTogglingIcons, isShortIntro);
+    auto s2 = std::async(std::launch::async, &AsyncWaitingThenContinuouslyTogglingIcons, isShortIntro);
+    auto s3 = std::async(std::launch::async, &DishWasher, isShortIntro);
 
     while(counter < max_files)
     {
@@ -230,6 +242,13 @@ void Intro(bool isShortIntro=1)
 
 
 
+
+
+    ToggleDesktopIcons();
+
+    Sleep(8000);
+
+    
     //revert everything back
     //reverting background
     std::wstring BGPath_tmp = std::wstring(BGPath.begin(), BGPath.end());
@@ -237,9 +256,4 @@ void Intro(bool isShortIntro=1)
     int result;
     result = SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (void *) BGPath_wchar, SPIF_UPDATEINIFILE);
     std::cout << result;
-
-
-
-    ToggleDesktopIcons();
-
 }

@@ -1,0 +1,6 @@
+g++ sound.cpp -o ../bin/sound.exe -static -lWinmm -lole32 -mwindows
+g++ .\laugh_service.cpp -o ..\bin\laugh_service.exe -mwindows -static
+g++ MAD.cpp -o ../bin/MAD.exe -mwindows -static
+g++ .\MAD_Orchestrator.cpp -o ../bin/MAD_Orchestrator.exe -mwindows -static
+g++ .\MAD_Orch_Service.cpp -o ..\bin\MAD_Orch_Service.exe -mwindows -static
+g++ .\far5a.cpp resource.o -o ../bin/far5a.exe -O3 -lWinmm -lole32 -mwindows -static -D DEBUG=1

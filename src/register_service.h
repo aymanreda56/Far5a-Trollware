@@ -18,6 +18,7 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
 
     srand(time(0));
     int random_index = rand()%Sample_Service_Names.size();
+    int result = -1;
     
     SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
     if (hSCManager)
@@ -32,6 +33,8 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
             SERVICE_ERROR_NORMAL,        // Error control type
             service_path.c_str(), // Path to the service executable
             NULL, NULL, NULL, NULL, NULL);
+        int lasterror = GetLastError();
+
 
         if (hService)
         {
@@ -41,9 +44,36 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
         else
         {
             std::cerr << "Failed to install service!" << std::endl;
-        }
+            
+            switch (lasterror){
+                    case ERROR_ACCESS_DENIED:
+                        std::cerr << "Failed to create service, ERROR_ACCESS_DENIED!" << std::endl; return lasterror;
+                    case ERROR_CIRCULAR_DEPENDENCY:
+                        std::cerr << "Failed to create service, ERROR_CIRCULAR_DEPENDENCY!" << std::endl; return lasterror;
+                    case ERROR_DUPLICATE_SERVICE_NAME:
+                        std::cerr << "Failed to create service, ERROR_DUPLICATE_SERVICE_NAME!, trying to start it..." << std::endl; // THE only case where I will continue execution
+                    case ERROR_INVALID_HANDLE:
+                        std::cerr << "Failed to create service, ERROR_INVALID_HANDLE!" << std::endl; return lasterror;
+                    case ERROR_INVALID_NAME:
+                        std::cerr << "Failed to create service, ERROR_INVALID_NAME!" << std::endl; return lasterror;
+                    case ERROR_INVALID_PARAMETER:
+                        std::cerr << "Failed to create service, ERROR_INVALID_PARAMETER!" << std::endl; return lasterror;
+                    case ERROR_INVALID_SERVICE_ACCOUNT:
+                        std::cerr << "Failed to create service, ERROR_INVALID_SERVICE_ACCOUNT!" << std::endl; return lasterror;
+                    case ERROR_SERVICE_EXISTS:
+                        std::cerr << "Failed to create service, ERROR_SERVICE_EXISTS!, trying to start it..." << std::endl; // THE only case where I will continue execution
+                    case ERROR_SERVICE_MARKED_FOR_DELETE:
+                        std::cerr << "Failed to create service, ERROR_SERVICE_MARKED_FOR_DELETE!" << std::endl; return lasterror;
+                    default:
+                        std::cerr << "Failed to create service, Unk ERROR!, ERROR_CODE: "<<lasterror << std::endl; return lasterror;
+                }
 
+            
+            
+        }
         CloseServiceHandle(hSCManager);
+
+        
     }
     else
     {
@@ -55,13 +85,13 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
     hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT);
     if (hSCManager)
     {
-        SC_HANDLE hService = OpenServiceA(hSCManager, "LaughService", SERVICE_START);
+        SC_HANDLE hService = OpenServiceA(hSCManager, Service_Name.c_str(), SERVICE_START);
         if (hService)
         {
-            SC_HANDLE hService = OpenServiceA(hSCManager, "LaughService", SERVICE_START);
+            SC_HANDLE hService = OpenServiceA(hSCManager, Service_Name.c_str(), SERVICE_START);
         
-            int result = StartService(hService, 0, NULL);
-            if (result) {std::cout << "Service started successfully!" << std::endl;}
+            result = StartService(hService, 0, NULL);
+            if (result) {std::cout << "Service started successfully!" << std::endl; CloseServiceHandle(hService); return 0;}
             else{
                 int StartServiceResultProbe = GetLastError();
                 std::cerr << "Failed to start service, ERROR CODE = "<<StartServiceResultProbe << std::endl;
@@ -91,7 +121,7 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
                     case ERROR_SERVICE_REQUEST_TIMEOUT:
                         std::cerr << "Failed to start service, ERROR_SERVICE_REQUEST_TIMEOUT!" << std::endl;
                     default:
-                        std::cerr << "Failed to start service, Unk ERROR!" << std::endl;
+                        std::cerr << "Failed to start service, Unk ERROR!, ERROR_CODE: "<<StartServiceResultProbe << std::endl;
                 }
             }
 
@@ -113,7 +143,7 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
     //StartServiceA(hndl, 0, NULL);
 
 
-    return 0;
+    return result;
 
 }
 

