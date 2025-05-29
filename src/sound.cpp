@@ -135,7 +135,7 @@ int main()
 
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
     endpointVolume->GetMasterVolumeLevelScalar(&original_volume_level);
-    endpointVolume->SetMasterVolumeLevelScalar(0.8, nullptr);
+    endpointVolume->SetMasterVolumeLevelScalar(0.35, nullptr);
     //HANDLE thread = CreateThread(NULL, 0, MP3Proc, NULL, CREATE_SUSPENDED, NULL);
 
 

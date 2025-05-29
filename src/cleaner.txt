@@ -1,0 +1,5 @@
+taskkill /f /t /im MAD.exe
+sc stop MADOrch
+sc delete MADOrch
+sc stop LaughService
+sc delete LaughService

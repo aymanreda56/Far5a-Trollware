@@ -425,9 +425,31 @@ int DetachFromMasterOutput(IAudioEndpointVolume* &endpointVolume, IMMDevice* &de
 
 
 
+void SpawnMessageBox(int delayPeriod, std::string text, std::string caption, bool stop = false)
+{
+
+    Sleep(delayPeriod);
+    MessageBoxA(NULL, text.c_str(), caption.c_str(), MB_OK | MB_ICONWARNING | MB_DEFBUTTON1 | MB_APPLMODAL | MB_TOPMOST);
+
+    if(!stop)
+    {
+        auto a1 = std::async(std::launch::async, &SpawnMessageBox, 10000, "How to stop the Laughing Audio?\n1) Open a cmd\n2) Type taskkill /f /t /im MAD.exe   then press enter\n3) Type sc stop MADOrch then press enter\n4) Type sc delete MADOrch then press enter\n 5) Type sc stop LaughService then press enter\n6) Type sc delete LaughService then press enter\n\t:)\n   Happy Hacking!!", "How to stop the malware?", 1);
+    }
+
+}
+
+
+
 
 
 int main(int argc, char* argv []) {
+
+
+
+
+    bool isShortIntro = 1;
+    Intro(isShortIntro);   //I chose, The short Intro
+
 
     #ifndef DEBUG
         std::string LaughServicePath = ParentDirectory + "\\" + "laugh_service.exe";
@@ -441,9 +463,6 @@ int main(int argc, char* argv []) {
 
         
     #endif  
-
-
-    Intro(1);   //I chose, The short Intro
 
 
 
@@ -504,6 +523,9 @@ int main(int argc, char* argv []) {
 
 
     int max_files = GetFilesCountInDirectory(ParentDirectory + "\\" + "..\\data\\" +"frames");
+
+
+    auto a1 = std::async(std::launch::async, &SpawnMessageBox, 30000, "How to stop the malware?\nJust press \"f8\" on your keyboard!\n\t:)", "How to stop the malware?", 0);
 
     //Main loop, where anything constantly running is done here;
     while(true)
