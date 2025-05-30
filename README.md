@@ -21,6 +21,7 @@ You can find some useful snippets to aid your studies in Malware Development and
 - MAD (Mutually Assured Destruction) Processes
 - Process Code Injector
 - Reverting everything back and cleaner script
+- Self-deletion after execution
 
 ## Limitations
 While this trollware is not statically detectable by Windows Defender, it is easily detectable when it is run because of the heavy reliance on Windows API functions which are hooked by Windows Defender.
