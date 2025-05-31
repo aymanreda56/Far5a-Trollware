@@ -1,7 +1,7 @@
 # Far5a-Trollware
 
 ## Far5a-Trollware is a benign malware; software made to troll users and scare them. It is benign, it doesn't do harm.
-### It is an applied project during my study for malware development. If you wanna secure yourself from adversaries, you have to think like one.
+### It is an applied project during my study for Malware Analysis/Development and Windows System Internals. If you wanna secure yourself from adversaries, you have to think like one.
 
 ## Demo
 
