@@ -23,6 +23,12 @@ You can find some useful snippets to aid your studies in Malware Development and
 - Reverting everything back and cleaner script
 - Self-deletion after execution
 
+## Understanding its mechanism
+Far5a heavily relies on Windows API functions, combining lots of capabilities supported by the WinAPI in a creative way to achieve horror.
+It also practices changing Keys in the registry while saving the default values to be able to revert everything back.
+Victim's files are intact, everything is revertible, this malware comes with its anti-malware.
+Code files are heavily documented, reading comments is like reading a story; Each file says what it does, each function is explained, so you can read what went on my mind during development.
+
 ## Limitations
 While this trollware is not statically detectable by Windows Defender, it is easily detectable when it is run because of the heavy reliance on Windows API functions which are hooked by Windows Defender.
 To evade runtime detection, I must use manual syscalls instead of the Windows API functions, which is very cumbersome.
