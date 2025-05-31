@@ -4,15 +4,30 @@
 #include <set>
 #include <algorithm>
 
+/*
+    This file has some helper functions regarding manipulation of the screen resolution and orientation
+*/
 
 
 bool SaveOriginalResolution(DEVMODE& originalMode) {
+    /*
+        Saves the original screen resolution/orientation parameters to be able to revert back to it later.
+        Values are written to originalMode passed by ref.
+    */
+
     originalMode.dmSize = sizeof(originalMode);
     return EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &originalMode);
 }
 
+
+
 int RevertResolutionToDefault(DEVMODE& originalMode)
 {
+    /*
+        Reverts everything back to the passed Mode, which will be the original mode
+        returns the error code or 0 if successful
+    */
+
     LONG result = ChangeDisplaySettingsExA(NULL, &originalMode, NULL, CDS_RESET, NULL);
     switch(result)
     {
@@ -34,14 +49,19 @@ int RevertResolutionToDefault(DEVMODE& originalMode)
             std::cerr << "error in resolution change attempt: DISP_CHANGE_RESTART!" << std::endl; return result;
         default:
             std::cerr << "error in resolution change attempt, ERROR CODE: "<<result << std::endl; return result;
-
     }
 
 }
 
 
-LONG ChangeResolution(int width, int height, DWORD orientation) //prev_mode to preserve the old mode to revert back
+
+
+LONG ChangeResolution(int width, int height, DWORD orientation)
 {
+    /*
+        Changes resoltion and orientation to the target parameters
+        returns error code or 0 if successful
+    */
 
     DEVMODE mode = {0};
 
@@ -80,8 +100,16 @@ LONG ChangeResolution(int width, int height, DWORD orientation) //prev_mode to p
 }
 
 
+
+
 std::vector<std::pair<int,int>> GetAvailableResolutions()
 {
+    /*
+        Not all display monitors support all combinations of resolutions
+        So this function returns a vector of all viable combinations of resolutions that are supported by your display monitor
+        returns a vector of pairs, sorted ascendingly, unique elements
+    */
+
     DEVMODE devMode = {};
     devMode.dmSize = sizeof(DEVMODE);
 
@@ -113,6 +141,13 @@ std::vector<std::pair<int,int>> GetAvailableResolutions()
 
 void AscendingResolutionRollerCoaster()
 {
+    /*
+        This rollercoaster changes the victim's resolution slowly from the lowest possible resolution to the highest
+        then changes it again from the highest resolution slowly to the lowest
+        and so on.
+        Then reverts to the default original resolution.
+    */
+
     DEVMODE OriginalMode = {0}; //preserving original resolution
     if(!SaveOriginalResolution(OriginalMode)){std::cout<<"Error is preserving original resolution"<<std::endl;}
 
@@ -137,8 +172,17 @@ void AscendingResolutionRollerCoaster()
     RevertResolutionToDefault(OriginalMode);
 }
 
+
+
+
+
 void AlternatingResolution()
 {
+    /*
+        This function alternates the resolution of the victim's machine between the highest and lowest resolutions multiple times.
+        Then finally reverting back to the original resolution.
+    */
+
     DEVMODE OriginalMode = {0}; //preserving original resolution
     if(!SaveOriginalResolution(OriginalMode)){std::cout<<"Error is preserving original resolution"<<std::endl;}
 
@@ -152,7 +196,6 @@ void AlternatingResolution()
         Sleep(1200);
     }
 
-
     RevertResolutionToDefault(OriginalMode);
 }
 
@@ -161,7 +204,10 @@ void AlternatingResolution()
 
 void WashingMachineResolution()
 {
-
+    /*
+        This function changes the orientation of the victim's monitor rapidly giving him the sense of being inside a washing machine
+        Then finally reverting to the original orientation.
+    */
 
     DEVMODE OriginalMode = {0}; //preserving original resolution
     if(!SaveOriginalResolution(OriginalMode)){std::cout<<"Error is preserving original resolution"<<std::endl;}
@@ -212,6 +258,10 @@ void WashingMachineResolution()
 }
 
 
+/*
+    This is just a demo that showcases the above functions
+*/
+
 // int main()
 // {
 
@@ -227,11 +277,6 @@ void WashingMachineResolution()
 
     
 //     WashingMachineResolution();
-    
-    
-
-    
-    
     
 //     return 0;
 // }

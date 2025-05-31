@@ -4,7 +4,14 @@
 #include <string.h>
 #include <tlhelp32.h>
 
-// find process ID by process name
+/*
+  This file is a demo to test the possibility of killing windows file explorer then starting it again
+  it is already integrated into Far5a.cpp, functions are already implemented there
+*/
+
+
+
+// find process ID by process name, returning the PID
 int findMyProc(const char *procname) {
 
   HANDLE hSnapshot;
@@ -38,13 +45,14 @@ int findMyProc(const char *procname) {
   return pid;
 }
 
+
+
 int main() {
-  int pid = 0; // process ID
+  int pid = 0;
 
   pid = findMyProc("explorer.exe");
   if (pid) {
     printf("\n\nPID = %d\n\n\n", pid);
-
 
     //finally killing the process
     HANDLE handle = OpenProcess(PROCESS_TERMINATE, FALSE, pid);

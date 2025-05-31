@@ -9,6 +9,25 @@
 #include <filesystem>
 
 
+/*
+    This is a demo to test the possibility of implemeting process code injection
+    We achieve this by 5 steps:
+    1) Generated some shell code, or arbitrary machine code
+    2) Locating a target process (getting its handle or pid)
+    3) Allocating some executable memory within the code section of this running process, allocated size = size of shell code in bytes
+    4) Writing our shellcode to this allocated memory portion that belongs to the target process
+    5) Creating a remote thread, with the starting Instruction pointer pointing to the beginning of the memory portion containing our shellcode
+
+    Considerations:
+    - Shell code must be compatible with the target CPU architecture
+    - Shell code must have resolved addresses (correct absolute addresses, not relative to another different entry point)
+    - Process injector must have run with high privileges
+    - Shell code should be relatively small in size
+
+
+    I couldn't integrate the process injector to Far5a.cpp, I just couldn't convert a whole executable to shell code
+*/
+
 
 
 
@@ -36,6 +55,8 @@ HANDLE GetProcessHandleByName(std::string exe_name)
 
     return NULL;
 }
+
+
 
 
 std::vector<unsigned char> ReadBinaryFile(const std::string& filepath) {

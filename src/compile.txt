@@ -4,3 +4,11 @@ g++ MAD.cpp -o ../bin/MAD.exe -mwindows -static
 g++ .\MAD_Orchestrator.cpp -o ../bin/MAD_Orchestrator.exe -mwindows -static
 g++ .\MAD_Orch_Service.cpp -o ..\bin\MAD_Orch_Service.exe -mwindows -static
 g++ .\far5a.cpp resource.o -o ../bin/far5a.exe -O3 -lWinmm -lole32 -mwindows -static -D DEBUG=1
+
+
+
+to split a video to certain bmp frames:
+./ffmpeg -i "<video.mp4>" -r <fps> -vf "scale=<scale>" "<target_path>\%d.bmp"
+
+to extract wav audio from mp4 video:
+./ffmpeg -i "<video.mp4>" -vn -acodec pcm_s16le -ar 44100 -ac 2 "<outputsound.wav>"

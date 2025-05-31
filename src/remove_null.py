@@ -1,4 +1,5 @@
 import sys
+# Just a helper function that removes null bytes from a binary file, to be read by the compiler if I ever wanted to link a binary file
 
 def remove_null_bytes(input_path, output_path):
     with open(input_path, 'rb') as f_in:

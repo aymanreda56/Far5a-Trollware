@@ -5,6 +5,17 @@
 #include <shlobj.h>
 #include <tlhelp32.h>
 
+/*
+    This file is just a demo that:
+    1) Changes folder icons to a hardcoded .ico file
+    2) Changes icons of some program extenstions
+
+    Just to test changing all the icons at once.
+*/
+
+
+
+
 bool SetFileExtensionIcon(const std::wstring& extension, const std::wstring& iconPath, bool revert = false) {
     HKEY hExtKey = nullptr;
     HKEY hIconKey = nullptr;
