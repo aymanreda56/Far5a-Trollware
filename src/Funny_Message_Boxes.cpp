@@ -114,10 +114,18 @@ int main()
 {
     srand(static_cast<unsigned int>(time(0)));    
 
+    Sleep(10000);
+
     while(true)
     {
+        Sleep(3000);
+        if(GetAsyncKeyState(VK_F8)) //scanning for f8 press
+        {
+            break;
+        }
+
         auto a1 = std::async(std::launch::async, &SpawnMessageBoxAtRandomLoc, Creepy_Messages[rand()%Creepy_Messages.size()], "MWahahahaha!!");
-        Sleep(1000);
+        
     }
 
     return 0;

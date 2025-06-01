@@ -174,7 +174,7 @@ int main()
 
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
     endpointVolume->GetMasterVolumeLevelScalar(&original_volume_level);
-    endpointVolume->SetMasterVolumeLevelScalar(0.35, nullptr);          //Increasing volume
+    endpointVolume->SetMasterVolumeLevelScalar(0.9, nullptr);          //Increasing volume
 
 
 

@@ -98,27 +98,27 @@ int main()
     std::string OutputFilePath = DirectoryPath + "\\" + std::to_string(MyPID) + ".txt";
 
 
-    std::ofstream myfile;
-    myfile.open(OutputFilePath, std::fstream::out);
-    myfile << MyPID <<std::endl;
-    myfile.close();
+    // std::ofstream myfile;
+    // myfile.open(OutputFilePath, std::fstream::out);
+    // myfile << MyPID <<std::endl;
+    // myfile.close();
 
     while(true)
     {
 
-        myfile.open(OutputFilePath, std::fstream::app);
-        myfile << "Inside the loop" <<std::endl;
-        myfile.close();
-        Sleep(rand()%5000);
+        // myfile.open(OutputFilePath, std::fstream::app);
+        // myfile << "Inside the loop" <<std::endl;
+        // myfile.close();
+        // Sleep(rand()%5000);
 
         if (other_Process_Handle == NULL)
         {
             other_Process_Handle = GetProcessHandleByName_NotEqToPID("sound.exe", MyPID); //trying one more time
             if (other_Process_Handle == NULL) {break;}
 
-            myfile.open(OutputFilePath, std::fstream::app);
-            myfile << "FOUND IT!!" <<std::endl;
-            myfile.close();
+            // myfile.open(OutputFilePath, std::fstream::app);
+            // myfile << "FOUND IT!!" <<std::endl;
+            // myfile.close();
         }
 
         DWORD Proc_Stt;
@@ -126,9 +126,9 @@ int main()
 
         GetExitCodeProcess(other_Process_Handle, &Proc_Stt);
 
-        myfile.open(OutputFilePath, std::fstream::app);
-        myfile << "Checking the other alive process" <<std::endl;
-        myfile.close();
+        // myfile.open(OutputFilePath, std::fstream::app);
+        // myfile << "Checking the other alive process" <<std::endl;
+        // myfile.close();
 
 
         if(Proc_Stt != STILL_ACTIVE)   //if the other process terminated

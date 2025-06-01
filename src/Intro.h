@@ -178,7 +178,7 @@ void DishWasher(bool isShortIntro=1)
 
 
 
-void Intro(bool isShortIntro=1) //We choose the short intro by default, the long one is kinda boring
+void Intro(bool isShortIntro=1, bool resolutionChange=0) //We choose the short intro by default, the long one is kinda boring
 {
     //Some absolute path variables to free my head from the relative path issues
     char patth [255] = {0};
@@ -221,7 +221,9 @@ void Intro(bool isShortIntro=1) //We choose the short intro by default, the long
     // Interactive toggling of icons and orientation at certain fixed times of the Intro (see the implementation to see the timestamps)
     auto s1 = std::async(std::launch::async, &AsyncWaitThenShowIconsForSomeTime, isShortIntro);
     auto s2 = std::async(std::launch::async, &AsyncWaitingThenContinuouslyTogglingIcons, isShortIntro);
-    auto s3 = std::async(std::launch::async, &DishWasher, isShortIntro);
+    
+    if(resolutionChange){auto s3 = std::async(std::launch::async, &DishWasher, isShortIntro);}
+   
 
 
     while(counter < max_files)
@@ -251,7 +253,7 @@ void Intro(bool isShortIntro=1) //We choose the short intro by default, the long
             duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();}
         
         //This is my bad way to perform synchronization
-        usleep(time_step_of_one_frame - duration*4); //busy waiting, dynamic to accomodate different execution speeds, bad way to do synchronization between sound and video frames
+        usleep(time_step_of_one_frame - duration*13 - 400); //busy waiting, dynamic to accomodate different execution speeds, bad way to do synchronization between sound and video frames
         //usleep(118830);
     }
 
@@ -263,7 +265,7 @@ void Intro(bool isShortIntro=1) //We choose the short intro by default, the long
     ToggleDesktopIcons();
 
     //Wait till all asynchronous threads have been terminated
-    Sleep(8000);
+    if(resolutionChange){Sleep(8000);}
 
     
     //revert everything back
