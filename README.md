@@ -7,6 +7,16 @@
   <img src="https://github.com/aymanreda56/Far5a-Trollware/blob/main/data/chick.png" width="300" height="280">
 </p>
 
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/aymanreda56/Far5a-Trollware)
+![Made with C++ ❤️](https://img.shields.io/badge/Made%20with-C++-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![Code Size](https://img.shields.io/github/languages/code-size/yourusername/your-repo)
+
+
+
+
+
 ### It is an applied project during my study for Malware Analysis/Development and Windows System Internals. If you wanna secure yourself from adversaries, you have to think like one 💅
 
 
@@ -87,7 +97,14 @@ Compile files in the following order using your preferred compiler and flags, i'
 4) It is an educational project as part of my studies in malware development and windows system internals
 5) I am not responsible for anyone who uses parts of my code to do something malicious, all evil is already easily accessible via the internet.
 
-
+## 🌅 Future Plans and Contribution Opportunities
+I openly accept contributions, just make sure to properly write comments.
+I expect to implement the following in future commits:
+- Evading as many AVs as possible (Statically). using function aliasing, encrypting names, logic obfuscation, etc.
+- Implementing syscalls directly avoiding Windows API functions, to evade dynamic scans and behavioral monitors and AV hooks to the famous WinAPI functions
+- Achieving better persistence
+- Evading UAC to gain elevated privileges via exploiting any vulnerability, searching for DLL injection opportunities & automating code injection (no hardcoding).
+- Self replication 🐛
 
 
 ### 🔗 Links
