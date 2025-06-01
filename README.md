@@ -1,10 +1,18 @@
 # Far5a-Trollware
 
-## Far5a-Trollware is a benign malware; software made to troll users and scare them. It is benign, it doesn't do harm.
+## Far5a-Trollware is a benign malware; a software made to troll users and scare them. It is benign and doesn't do harm.
+
+
+<p align="center">
+  <img src="https://github.com/aymanreda56/Far5a-Trollware/blob/main/data/chick.png" width="300" height="280">
+</p>
+
 ### It is an applied project during my study for Malware Analysis/Development and Windows System Internals. If you wanna secure yourself from adversaries, you have to think like one.
 
-## Demo
 
+
+## Demo
+[![Watch the video](https://github.com/aymanreda56/Far5a-Trollware/blob/main/data/short_intro_audio.wav)](https://github.com/aymanreda56/Far5a-Trollware/blob/main/data/short_intro_audio.wav)
 
 ## Lore
 There is an old joke circulating around my friends, telling "العيد فرخة" (Feast is chicken) instead of "العيد فرحة" (Feast glares with joy).
@@ -46,6 +54,16 @@ I am a malware analyst, I'm in a constant phase of studying malwares. As part of
 ## How to run
 1) Compile your own version of Far5a via the set of commands inside ./src/Compile.txt
 2) Run the top-level executable which is Far5a.exe, you must run it as administrator to see its full extent.
+
+## Build steps
+Building is pretty easy, you should have a cpp compiler, and a windows machine.
+Compile files in the following order using your preferred compiler and flags, i've used g++:-
+
+
+## Minimum requirements
+- Windows 8 or higher
+- 8Gb RAM or more
+- 2.9Gb or storage (to store the video bmp frames which are not compressed)
 
 ## How to stop it in-case things get unexpected
 1) Press f8 to revert desktop and icons to their previous states.
