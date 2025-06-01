@@ -1,4 +1,5 @@
 #include "ChangeResolution.h"
+#include "ch_background.h"
 #include <shlObj.h>
 
 #include <unistd.h>
@@ -14,7 +15,7 @@
 
 #include <mciapi.h>
 #include <endpointvolume.h>
-#include "shared_util.h"
+
 
 //these two headers are already included in the <Windows.h> header
 #pragma comment(lib, "Winmm.lib")
