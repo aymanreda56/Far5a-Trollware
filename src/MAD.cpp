@@ -9,6 +9,11 @@
 MAD is short for Mutually Assured Destruction.
 A case when two entities have armaggedon weaponry but choose not to attack.
 Because if any party decides to attack the other, it assures the destruction of both entities.
+
+
+Its mechanism is simple, two or more processes looking at each other
+If one process dies, all other processes try to ressurrect it (Or all others replicate)
+PIDs of all MADs' processes should be known by all MADs
 */
 
 
@@ -20,6 +25,13 @@ std::string DirectoryPath = std::filesystem::path(path).parent_path().string();
 
 HANDLE GetProcessHandleByName_NotEqToPID(std::string exe_name, DWORD OtherPID)
 {
+    /*
+        This function takes a process name, and another PID
+        Searchs for the first occurence of process having the same process name but with PID different than the passed one
+
+        Basically getting "The other process"
+        finally returning the handle
+    */
     HANDLE hProcess = {0};
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);

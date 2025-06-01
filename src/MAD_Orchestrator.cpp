@@ -3,6 +3,17 @@
 #include <filesystem>
 
 
+
+/*
+    This Orchestrator does a single thing: Spawn two instances of MADs
+
+    MADs mechanism is explained inside MAD.cpp
+
+    The orchestrator just spawns two MADs then dies immediately.
+    The orchestrator might spawn more than two, but it will be harder for me to revert everything back, I want to slow things down not to make it completely disastrous
+*/
+
+
 char path [255];
 int dummy = GetModuleFileNameA(NULL, path, 255);
 std::string DirectoryPath = std::filesystem::path(path).parent_path().string();
