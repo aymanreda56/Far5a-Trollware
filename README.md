@@ -22,8 +22,8 @@
 
 ## 🎬 Demo
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=gpytJI32PVE">
-    <img src="https://img.youtube.com/vi/gpytJI32PVE/0.jpg" width="500" height="350">
+  <a href="https://youtu.be/BvjDXkRtfWA">
+    <img src="https://img.youtube.com/vi/BvjDXkRtfWA/0.jpg" width="500" height="350">
   </a>  
 </p>
 
