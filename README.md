@@ -8,10 +8,9 @@
 </p>
 
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/aymanreda56/Far5a-Trollware)
 ![Made with C++ ❤️](https://img.shields.io/badge/Made%20with-C++-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
-![Code Size](https://img.shields.io/github/languages/code-size/yourusername/your-repo)
+![Code Size](https://img.shields.io/github/languages/code-size/aymanreda56/Far5a-Trollware)
 
 
 
