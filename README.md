@@ -21,9 +21,10 @@
 
 
 ## 🎬 Demo
+Will redirect you to the Youtube demo
 <p align="center">
   <a href="https://youtu.be/BvjDXkRtfWA">
-    <img src="https://img.youtube.com/vi/BvjDXkRtfWA/0.jpg" width="500" height="350">
+    <img src="https://github.com/aymanreda56/Far5a-Trollware/blob/main/data/1145.bmp" width="530" height="300">
   </a>  
 </p>
 
